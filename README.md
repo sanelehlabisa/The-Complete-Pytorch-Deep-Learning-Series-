@@ -5,3 +5,5 @@ my laptop is not working
 we are back
 
 no electricity, no internet connection 😢 
+
+no electricity again 😢 
