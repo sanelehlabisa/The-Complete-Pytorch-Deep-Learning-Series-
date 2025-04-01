@@ -1,0 +1,51 @@
+PyTorch Deep Learning Tutorial: Basics (Part 3) Summary
+Understanding Neural Network Training
+
+Importance of training neural networks to minimize loss and improve accuracy.
+Data Handling
+
+Use of torch.utils.data.Dataset and torch.utils.data.DataLoader for efficient data loading.
+Dataset Class: Custom dataset class for loading and preprocessing data.
+Key Components
+
+DataLoader: Combines a dataset and a sampler to provide mini-batches of data.
+Batch Size: Number of samples processed before the model's internal parameters are updated.
+Shuffle: Randomizes the order of data for each epoch to improve training.
+Training Process
+
+Steps involved in training a model:
+Load data using DataLoader.
+Perform forward pass to get predictions.
+Calculate loss using a loss function.
+Perform backward pass to compute gradients.
+Update model parameters using an optimizer.
+Evaluation
+
+Evaluating model performance on validation/test datasets.
+Metrics for evaluation (accuracy, precision, recall).
+Key Functions and Classes
+
+torch.utils.data.Dataset: Base class for custom datasets.
+torch.utils.data.DataLoader: Loads data in batches.
+train_test_split(): Splits data into training and testing sets (from scikit-learn).
+Example Code Snippets
+
+Custom Dataset Class:
+
+class MyDataset(torch.utils.data.Dataset):
+    def __init__(self, data, targets):
+        self.data = data
+        self.targets = targets
+
+    def __len__(self):
+        return len(self.data)
+
+    def __getitem__(self, idx):
+        return self.data[idx], self.targets[idx]
+Using DataLoader:
+
+dataset = MyDataset(data, targets)
+dataloader = DataLoader(dataset, batch_size=32, shuffle=True)
+
+for batch_data, batch_targets in dataloader:
+    # Training logic here
