@@ -1,0 +1,50 @@
+PyTorch Deep Learning Tutorial: MLP Function Approximation Summary
+Introduction to MLPs
+
+The video focuses on implementing a Multi-Layer Perceptron (MLP) for approximating the sine function using noisy data.
+MLPs consist of multiple layers, including hidden layers with activation functions, enabling them to model non-linear relationships.
+PyTorch Data Sets and Data Loaders
+
+Introduces the concept of data loaders for handling large datasets by breaking them into mini-batches.
+Mini-batch gradient descent allows for efficient training without requiring the entire dataset at once.
+Creating a Custom Dataset
+
+A custom dataset class is defined to generate input (X) and target (Y) values based on the sine function, including added noise.
+The dataset class requires defining __len__ and __getitem__ methods to facilitate data handling.
+Neural Network Architecture
+
+The MLP consists of multiple linear layers and activation functions (e.g., tanh) to approximate the sine function.
+The architecture includes one input layer, three hidden layers, and one output layer.
+Training and Testing Loops
+
+The training loop uses mini-batches from the data loader to perform forward passes, calculate loss, and update model weights.
+The mean squared error (MSE) loss function is used for regression tasks.
+Observations During Training
+
+The training loss may appear noisy due to the mini-batch approach, which reflects the stochastic nature of the gradient descent.
+The model is expected to learn the underlying sine function despite the noise in the target data.
+Domain Shift
+
+The model's predictions are reliable only within the training domain (e.g., between -9 and 9). Predictions outside this range may be inaccurate.
+Emphasizes the importance of training data distribution and its effect on model generalization.
+Example Code Snippet for Custom Dataset
+
+
+import torch
+from torch.utils.data import Dataset, DataLoader
+import numpy as np
+
+class SineDataset(Dataset):
+    def __init__(self, num_points):
+        self.x = np.random.uniform(-9, 9, num_points).astype(np.float32)
+        self.y = np.sin(self.x) + np.random.normal(0, 0.1, num_points).astype(np.float32)  # Adding noise
+
+    def __len__(self):
+        return len(self.x)
+
+    def __getitem__(self, idx):
+        return self.x[idx], self.y[idx]
+
+# Example of creating a DataLoader
+train_dataset = SineDataset(1000)
+train_loader = DataLoader(train_dataset, batch_size=256, shuffle=True)

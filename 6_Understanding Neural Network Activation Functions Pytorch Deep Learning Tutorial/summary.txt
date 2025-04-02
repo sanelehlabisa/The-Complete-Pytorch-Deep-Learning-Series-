@@ -1,0 +1,44 @@
+PyTorch Deep Learning Tutorial: Basics (Part 6) Summary
+Introduction to Non-Linear Neural Networks
+
+Focus on the necessity of activation functions to create non-linear models.
+The example used is a binary classification problem with non-linearly separable data.
+Understanding Non-Linearity
+
+Linear models (like logistic regression) struggle with datasets that cannot be separated by a straight line.
+Non-linear models can create complex decision boundaries by stacking linear layers with activation functions.
+Activation Functions
+
+Activation functions introduce non-linearity, allowing the model to learn complex patterns.
+Example activation function discussed: Sigmoid.
+Stacking multiple linear transformations results in a model that is still linear; thus, non-linear activation functions are essential.
+Building a Non-Linear Model by Hand
+
+The process involves creating two independent one-dimensional linear models to classify the data.
+After obtaining outputs from these models, a sigmoid activation function is applied to introduce non-linearity.
+This mapping allows for better separation of classes in the transformed space.
+Decision Boundaries
+
+By adjusting parameters and applying the sigmoid function, the model can create a decision boundary that perfectly separates the two classes.
+Training a Non-Linear Model in PyTorch
+
+Use nn.Module to define a non-linear model with two linear layers and a sigmoid activation function between them.
+The forward pass involves passing inputs through the first linear layer, applying the activation function, and then passing the result through the second linear layer.
+Example Code Snippet
+
+import torch.nn as nn
+import torch.nn.functional as F
+
+class NonLinearModel(nn.Module):
+    def __init__(self, input_size, hidden_size, output_size):
+        super(NonLinearModel, self).__init__()
+        self.linear1 = nn.Linear(input_size, hidden_size)
+        self.linear2 = nn.Linear(hidden_size, output_size)
+
+    def forward(self, x):
+        h = F.sigmoid(self.linear1(x))
+        return self.linear2(h)
+Conclusion
+
+Non-linear models are crucial for solving real-world problems where data is not linearly separable.
+The use of activation functions allows for the creation of complex models that can learn intricate patterns in data.
