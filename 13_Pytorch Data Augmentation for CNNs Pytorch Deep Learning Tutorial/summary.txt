@@ -1,0 +1,57 @@
+PyTorch Tutorial: Data Augmentations and Learning Rates
+Overview
+This video focuses on training techniques for convolutional classifiers to enhance performance, especially when pre-trained weights are unavailable or not applicable.
+Key topics include data augmentation and learning rate scheduling.
+Key Concepts
+Data Augmentation
+
+Definition: Data augmentation involves modifying training images to create variations while preserving their content, which helps prevent overfitting by making it harder for the model to memorize specific pixel values.
+Techniques:
+Random Rotation: Rotates images by a specified degree.
+Horizontal Flip: Flips images horizontally.
+Auto Augment: A predefined set of transformations that apply various augmentations randomly based on policies (e.g., ImageNet policy).
+Importance: Expands the effective dataset size, helping models generalize better by exposing them to different perspectives of the same data.
+Copy
+from torchvision import transforms
+
+transform = transforms.Compose([
+    transforms.RandomRotation(30),
+    transforms.RandomHorizontalFlip(),
+    transforms.AutoAugment(transforms.AutoAugmentPolicy.IMAGENET),
+    transforms.ToTensor(),
+    transforms.Normalize((0.5,), (0.5,))
+])
+Learning Rate Scheduling
+
+Definition: Learning rate scheduling adjusts the learning rate during training to optimize convergence and prevent instability.
+Common Schedulers:
+StepLR: Reduces the learning rate by a fixed factor (gamma) every specified number of epochs.
+Cosine Annealing: Gradually decreases the learning rate following a cosine curve over a defined number of steps.
+Cyclic Learning Rate: Cycles the learning rate between a minimum and maximum value.
+ReduceLROnPlateau: Reduces the learning rate when a metric (like validation loss) has stopped improving.
+Copy
+from torch.optim.lr_scheduler import StepLR
+
+scheduler = StepLR(optimizer, step_size=10, gamma=0.1)
+Training Process
+
+The training loop involves applying data augmentations and learning rate schedules to improve model performance.
+Models are trained without pre-trained weights initially to establish a baseline performance, followed by experiments with various augmentations and learning rate adjustments.
+Performance Evaluation
+
+After training, models are evaluated based on validation and test accuracies.
+Data augmentation and proper learning rate scheduling can lead to significant improvements in accuracy.
+Observations and Results
+
+Initial training without augmentations resulted in overfitting, with validation accuracy peaking around 49%.
+Implementing data augmentations (rotation and flipping) increased validation accuracy to around 60%.
+Using Auto Augment alone yielded a validation accuracy of approximately 56.6%.
+Combining both augmentations led to a validation accuracy of 64.91%.
+Adjusting the learning rate dynamically helped avoid spikes in loss and improved convergence.
+Final Remarks
+
+The tutorial emphasizes the importance of tuning training parameters, such as learning rates and data augmentations, to achieve better model performance.
+It highlights that improving training techniques can lead to substantial gains in accuracy, demonstrating the effectiveness of these methods even without pre-trained models.
+Conclusion
+Data augmentation and learning rate scheduling are crucial techniques for enhancing the performance of convolutional classifiers, especially when data is limited or not well-matched to pre-trained models.
+The next video will explore utilizing additional unlabeled data to further improve model accuracy through unsupervised learning techniques.

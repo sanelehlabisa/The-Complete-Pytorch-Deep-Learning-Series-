@@ -1,0 +1,60 @@
+PyTorch Tutorial: Transfer Learning
+Overview
+This tutorial focuses on transfer learning, a technique that leverages pre-trained models to improve performance on a new task, especially when training data is limited.
+The STL-10 dataset is used, which contains 5,000 training images and 8,000 test images across 10 classes, along with 100,000 unlabeled images.
+Key Concepts
+What is Transfer Learning?
+
+Transfer learning involves using a model pre-trained on a large dataset (like ImageNet) and fine-tuning it on a smaller, specific dataset.
+This approach is beneficial when the new dataset is small or when training a large model from scratch would require extensive computational resources.
+Pre-trained Models in PyTorch
+
+PyTorch provides several pre-trained models, including various architectures of ResNet (e.g., ResNet-18, ResNet-34).
+These models have been trained on ImageNet, which consists of millions of images across 1,000 classes.
+Modifying the Model for a New Task
+
+The last fully connected layer of the pre-trained model needs to be replaced to match the number of classes in the new dataset.
+For example, if the original model outputs 1,000 classes, it should be replaced with a new layer that outputs the number of classes in the STL-10 dataset (10 classes).
+
+import torchvision.models as models
+
+model = models.resnet18(pretrained=True)
+num_ftrs = model.fc.in_features
+model.fc = nn.Linear(num_ftrs, 10)  # Replace with 10 classes
+Weight Freezing
+
+Weight freezing is a technique where the parameters of certain layers (usually convolutional layers) are kept constant while training only the last layer.
+This can speed up training and reduce the risk of overfitting on small datasets.
+
+for param in model.parameters():
+    param.requires_grad = False  # Freeze all layers
+model.fc.requires_grad = True  # Unfreeze the last layer
+Training the Model
+
+The training process involves defining the loss function, optimizer, and training loop.
+Checkpointing is implemented to save the model’s state during training, allowing for resumption or evaluation later.
+
+def save_checkpoint(state, filename='checkpoint.pth'):
+    torch.save(state, filename)
+
+def load_checkpoint(model, optimizer, filename='checkpoint.pth'):
+    checkpoint = torch.load(filename)
+    model.load_state_dict(checkpoint['model_state_dict'])
+    optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+Performance Evaluation
+
+After training, the model's performance is evaluated based on validation and test accuracies.
+Significant improvements in accuracy are expected when using pre-trained weights compared to training from scratch.
+Experimentation with Different Architectures
+
+The tutorial encourages experimenting with different pre-trained models, such as EfficientNet, to compare performance.
+EfficientNet-B0, for example, may yield better accuracy with fewer parameters compared to ResNet-18.
+
+from efficientnet_pytorch import EfficientNet
+
+model = EfficientNet.from_pretrained('efficientnet-b0')
+model._fc = nn.Linear(model._fc.in_features, 10)  # Adjust for 10 classes
+Conclusion
+Transfer learning is a powerful technique that leverages existing knowledge from pre-trained models to enhance performance on new tasks, particularly when labeled data is scarce.
+The tutorial emphasizes the importance of selecting appropriate pre-trained models and modifying them for specific tasks.
+Future sections will explore how to utilize unlabeled data for further improvements in model performance.

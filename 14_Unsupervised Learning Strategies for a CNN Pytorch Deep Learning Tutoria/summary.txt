@@ -1,0 +1,38 @@
+PyTorch Tutorial: Unsupervised Pre-Training Techniques
+Overview
+This video discusses unsupervised methods to pre-train models using unlabeled data before fine-tuning for classification tasks, particularly with the STL-10 dataset, which has 5,000 labeled images and 100,000 unlabeled images.
+Key Concepts
+Unsupervised Learning with Unlabeled Data
+
+The focus is on leveraging unlabeled images to create a pre-trained model that can improve performance when labeled data is scarce.
+Methods for Pre-Training
+
+Rotation Prediction:
+
+Images are rotated by predefined angles, and the model learns to predict the angle of rotation as a classification task.
+The dataset class is modified to inherit from PyTorch's STL-10 dataset, overriding the __getitem__ method to apply rotations and generate labels based on the rotation index.
+Copy
+class RotateSTL10(STL10):
+    def __getitem__(self, index):
+        image, _ = super().__getitem__(index)
+        angle = random.choice([0, 90, 180, 270])
+        rotated_image = transforms.functional.rotate(image, angle)
+        return transformed_image, angle // 90  # label based on rotation
+Puzzle Solving:
+
+The image is divided into a grid (e.g., 3x3), shuffled, and the model predicts the order of the shuffled pieces.
+This method generates a more complex label based on permutations of the image sections.
+Copy
+def shuffle_image(image):
+    # Divide image into 3x3 grid and shuffle
+    # Create permutations and return shuffled image with label
+Training and Evaluation
+
+After pre-training, the model is fine-tuned on labeled data. For the rotation method, a validation accuracy of 71% was achieved, indicating a 6% improvement over previous methods.
+The puzzle-solving method yielded a test accuracy of 71%, suggesting its effectiveness may vary based on the dataset.
+Practical Considerations
+
+The rotation method is more effective for datasets where orientation matters, while the puzzle-solving method may be better for datasets with less distinct orientations.
+Pre-training can also utilize other labeled datasets unrelated to the target task, allowing for flexibility in model training.
+Conclusion
+Unsupervised pre-training techniques can significantly enhance model performance, especially with limited labeled data. The video encourages experimentation with various methods and datasets to find optimal solutions.
