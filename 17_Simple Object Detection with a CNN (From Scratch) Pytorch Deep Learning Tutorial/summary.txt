@@ -1,0 +1,99 @@
+PyTorch Tutorial: Generative Adversarial Networks (GANs)
+Overview
+This tutorial introduces Generative Adversarial Networks (GANs), focusing on their architecture and implementation in PyTorch.
+Key Concepts
+GAN Architecture
+
+GANs consist of two neural networks:
+Generator (G): Generates fake data from random noise.
+Discriminator (D): Distinguishes between real and fake data.
+Both networks are trained simultaneously in a zero-sum game.
+Training Process
+
+The generator aims to maximize the discriminator's error, while the discriminator aims to minimize it.
+Loss Functions
+
+Discriminator loss:
+Copy
+L_D = -torch.mean(torch.log(D(real_data))) - torch.mean(torch.log(1 - D(G(z))))
+Generator loss:
+Copy
+L_G = -torch.mean(torch.log(D(G(z))))
+Implementation Steps
+
+Define the Generator and Discriminator:
+
+Copy
+import torch
+import torch.nn as nn
+
+class Generator(nn.Module):
+    def __init__(self):
+        super(Generator, self).__init__()
+        self.model = nn.Sequential(
+            nn.Linear(100, 256),
+            nn.ReLU(),
+            nn.Linear(256, 512),
+            nn.ReLU(),
+            nn.Linear(512, 784),
+            nn.Tanh()  # Output shape for MNIST
+        )
+
+    def forward(self, z):
+        return self.model(z)
+
+class Discriminator(nn.Module):
+    def __init__(self):
+        super(Discriminator, self).__init__()
+        self.model = nn.Sequential(
+            nn.Linear(784, 512),
+            nn.LeakyReLU(0.2),
+            nn.Linear(512, 256),
+            nn.LeakyReLU(0.2),
+            nn.Linear(256, 1),
+            nn.Sigmoid()
+        )
+
+    def forward(self, x):
+        return self.model(x)
+Training Loop:
+
+Copy
+generator = Generator()
+discriminator = Discriminator()
+criterion = nn.BCELoss()
+optimizer_G = torch.optim.Adam(generator.parameters(), lr=0.0002)
+optimizer_D = torch.optim.Adam(discriminator.parameters(), lr=0.0002)
+
+for epoch in range(num_epochs):
+    for real_data in dataloader:
+        # Train Discriminator
+        optimizer_D.zero_grad()
+        z = torch.randn(batch_size, 100)
+        fake_data = generator(z)
+        real_labels = torch.ones(batch_size, 1)
+        fake_labels = torch.zeros(batch_size, 1)
+
+        D_loss = criterion(discriminator(real_data), real_labels) + \
+                 criterion(discriminator(fake_data.detach()), fake_labels)
+        D_loss.backward()
+        optimizer_D.step()
+
+        # Train Generator
+        optimizer_G.zero_grad()
+        G_loss = criterion(discriminator(fake_data), real_labels)
+        G_loss.backward()
+        optimizer_G.step()
+Output Generation
+
+After training, generate new samples by passing random noise through the generator:
+Copy
+with torch.no_grad():
+    z = torch.randn(16, 100)
+    generated_images = generator(z)
+Common Challenges
+
+Mode Collapse: The generator produces limited varieties of outputs.
+Training Instability: Requires careful tuning of hyperparameters.
+Conclusion
+The tutorial provides a foundational understanding of GANs, emphasizing their adversarial nature and the process of training both the generator and discriminator networks.
