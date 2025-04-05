@@ -1,0 +1,263 @@
+Long-Short Term Memory and How to Use It! - PyTorch Deep Learning Tutorials
+Overview
+This tutorial covers the fundamentals of Long Short-Term Memory (LSTM) networks, a type of RNN designed to handle long-range dependencies in sequence data.
+Key Concepts
+What are LSTMs?
+
+LSTMs are a special kind of RNN that can learn long-term dependencies by using gates to control the flow of information.
+LSTM Architecture
+
+The LSTM cell has three main components:
+Forget Gate: Decides what information to discard from the cell state.
+Input Gate: Decides what new information to store in the cell state.
+Output Gate: Decides what information to output based on the cell state.
+The equations governing the LSTM are: 
+f
+t
+=
+σ
+(
+W
+f
+⋅
+[
+h
+t
+−
+1
+,
+x
+t
+]
++
+b
+f
+)
+f 
+t
+​
+ =σ(W 
+f
+​
+ ⋅[h 
+t−1
+​
+ ,x 
+t
+​
+ ]+b 
+f
+​
+ ) 
+i
+t
+=
+σ
+(
+W
+i
+⋅
+[
+h
+t
+−
+1
+,
+x
+t
+]
++
+b
+i
+)
+i 
+t
+​
+ =σ(W 
+i
+​
+ ⋅[h 
+t−1
+​
+ ,x 
+t
+​
+ ]+b 
+i
+​
+ ) 
+C
+~
+t
+=
+tanh
+⁡
+(
+W
+C
+⋅
+[
+h
+t
+−
+1
+,
+x
+t
+]
++
+b
+C
+)
+C
+~
+  
+t
+​
+ =tanh(W 
+C
+​
+ ⋅[h 
+t−1
+​
+ ,x 
+t
+​
+ ]+b 
+C
+​
+ ) 
+C
+t
+=
+f
+t
+⋅
+C
+t
+−
+1
++
+i
+t
+⋅
+C
+~
+t
+C 
+t
+​
+ =f 
+t
+​
+ ⋅C 
+t−1
+​
+ +i 
+t
+​
+ ⋅ 
+C
+~
+  
+t
+​
+  
+o
+t
+=
+σ
+(
+W
+o
+⋅
+[
+h
+t
+−
+1
+,
+x
+t
+]
++
+b
+o
+)
+o 
+t
+​
+ =σ(W 
+o
+​
+ ⋅[h 
+t−1
+​
+ ,x 
+t
+​
+ ]+b 
+o
+​
+ ) 
+h
+t
+=
+o
+t
+⋅
+tanh
+⁡
+(
+C
+t
+)
+h 
+t =o t⋅tanh(Ct)
+Loss Function
+
+Commonly used loss function for LSTMs is the Cross-Entropy Loss for classification tasks:
+
+loss = nn.CrossEntropyLoss()(output, target)
+Implementation Steps
+
+Define the LSTM Model:
+
+import torch
+import torch.nn as nn
+
+class LSTMModel(nn.Module):
+    def __init__(self, input_size, hidden_size, output_size):
+        super(LSTMModel, self).__init__()
+        self.lstm = nn.LSTM(input_size, hidden_size, batch_first=True)
+        self.fc = nn.Linear(hidden_size, output_size)
+
+    def forward(self, x):
+        h0 = torch.zeros(1, x.size(0), hidden_size)  # Initial hidden state
+        c0 = torch.zeros(1, x.size(0), hidden_size)  # Initial cell state
+        out, _ = self.lstm(x, (h0, c0))  # LSTM output
+        out = self.fc(out[:, -1, :])  # Last time step output
+        return out
+Training Loop:
+
+model = LSTMModel(input_size=10, hidden_size=64, output_size=2)
+optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+
+for epoch in range(num_epochs):
+    for sequences, targets in dataloader:
+        optimizer.zero_grad()
+        output = model(sequences)
+        loss = nn.CrossEntropyLoss()(output, targets)
+        loss.backward()
+        optimizer.step()
+Generating Predictions:
+
+with torch.no_grad():
+    test_sequence = ...  # Input sequence for prediction
+    predicted = model(test_sequence)
+Common Challenges
+
+Complexity: LSTMs can be more complex to train and tune compared to simpler models.
+Resource Intensive: They may require more computational resources due to their architecture.
+Conclusion
+The tutorial provides a foundational understanding of LSTMs in PyTorch, emphasizing their architecture, loss function, and training process.

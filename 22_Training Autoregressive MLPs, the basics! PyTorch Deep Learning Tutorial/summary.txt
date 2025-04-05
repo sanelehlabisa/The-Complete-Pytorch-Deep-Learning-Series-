@@ -1,0 +1,63 @@
+Training Autoregressive MLPs - The Basics! - PyTorch Deep Learning Tutorial
+Overview
+This tutorial explains the fundamentals of autoregressive models using Multi-Layer Perceptrons (MLPs) and their implementation in PyTorch.
+Key Concepts
+Autoregressive Models
+
+These models predict the next value in a sequence based on previous values. The output at time t depends on inputs from time steps t−1, t − 2,… t−1, t−2,….
+Modeling with MLPs
+
+An MLP can be used to model the conditional distribution P(xt∣x<t)
+Loss Function
+
+The loss is typically the negative log-likelihood:
+
+loss = -torch.mean(torch.log(model(input_sequence)))
+Implementation Steps
+
+Define the Autoregressive MLP:
+
+import torch
+import torch.nn as nn
+
+class AutoregressiveMLP(nn.Module):
+    def __init__(self, input_size, hidden_size):
+        super(AutoregressiveMLP, self).__init__()
+        self.model = nn.Sequential(
+            nn.Linear(input_size, hidden_size),
+            nn.ReLU(),
+            nn.Linear(hidden_size, 1)  # Output for next value
+        )
+
+    def forward(self, x):
+        return self.model(x)
+Training Loop:
+
+model = AutoregressiveMLP(input_size=1, hidden_size=64)
+optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+
+for epoch in range(num_epochs):
+    for sequence in dataloader:
+        optimizer.zero_grad()
+        input_sequence = sequence[:-1]  # All but last value
+        target = sequence[1:]           # All but first value
+        
+        output = model(input_sequence)
+        loss = nn.MSELoss()(output, target)
+        loss.backward()
+        optimizer.step()
+Generating Predictions:
+
+with torch.no_grad():
+    generated_sequence = []
+    input_seq = initial_input  # Starting point
+    for _ in range(sequence_length):
+        next_value = model(input_seq)
+        generated_sequence.append(next_value)
+        input_seq = torch.cat((input_seq[1:], next_value.unsqueeze(0)), dim=0)
+Common Challenges
+
+Sequential Dependency: Capturing long-range dependencies can be challenging.
+Training Stability: Requires careful tuning of hyperparameters.
+Conclusion
+The tutorial provides a foundational understanding of training autoregressive MLPs, emphasizing their architecture, loss function, and training process.
