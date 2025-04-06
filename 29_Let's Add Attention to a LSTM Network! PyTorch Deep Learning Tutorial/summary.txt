@@ -1,0 +1,62 @@
+Let's Add Attention to a LSTM Network! PyTorch Deep Learning Tutorial
+Overview
+This tutorial demonstrates how to integrate the attention mechanism into an LSTM network, enhancing its ability to focus on relevant parts of the input sequence during the decoding phase.
+Key Concepts
+Attention Mechanism
+
+Improves performance by allowing the model to weigh the importance of different encoder outputs when generating each token in the output sequence.
+LSTM Architecture
+
+Combines the strengths of LSTMs for sequence processing with the attention mechanism for improved context handling.
+Scoring Function
+
+Computes attention scores for each encoder output based on the current decoder hidden state.
+
+score = torch.tanh(W_a @ encoder_output + b_a)
+Attention Weights
+
+Softmax is applied to scores to get normalized attention weights:
+
+attention_weights = torch.softmax(score, dim=-1)
+Context Vector
+
+The context vector is derived from the weighted sum of encoder outputs:
+
+context_vector = attention_weights @ encoder_outputs
+Implementation Steps
+
+Define the Attention Layer:
+
+class Attention(nn.Module):
+    def __init__(self, hidden_size):
+        super(Attention, self).__init__()
+        self.W_a = nn.Linear(hidden_size, hidden_size)
+        self.b_a = nn.Parameter(torch.zeros(hidden_size))
+
+    def forward(self, encoder_outputs, decoder_hidden):
+        score = torch.tanh(self.W_a(encoder_outputs) + self.b_a)
+        attention_weights = torch.softmax(score, dim=-1)
+        context_vector = attention_weights @ encoder_outputs
+        return context_vector, attention_weights
+Modify the Decoder to Include Attention:
+
+class DecoderWithAttention(nn.Module):
+    def __init__(self, vocab_size, embedding_dim, hidden_size):
+        super(DecoderWithAttention, self).__init__()
+        self.attention = Attention(hidden_size)
+        self.embedding = nn.Embedding(vocab_size, embedding_dim)
+        self.lstm = nn.LSTM(embedding_dim + hidden_size, hidden_size, batch_first=True)
+        self.fc = nn.Linear(hidden_size, vocab_size)
+
+    def forward(self, decoder_input, encoder_outputs, decoder_hidden):
+        context_vector, attention_weights = self.attention(encoder_outputs, decoder_hidden)
+        decoder_input = self.embedding(decoder_input)
+        lstm_input = torch.cat((decoder_input, context_vector.unsqueeze(1)), dim=-1)
+        output, (hidden, cell) = self.lstm(lstm_input, (decoder_hidden, cell))
+        output = self.fc(output)
+        return output, hidden, cell
+Training Process
+
+Train the modified LSTM network with attention using the same approach as standard sequence-to-sequence models, ensuring to feed the attention-enhanced decoder.
+Conclusion
+The tutorial effectively integrates the attention mechanism into an LSTM network, demonstrating the process and benefits of enhanced context handling in sequence generation tasks.
