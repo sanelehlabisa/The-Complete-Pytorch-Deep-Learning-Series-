@@ -1,0 +1,64 @@
+Building an Encoder-Decoder Transformer from Scratch!: PyTorch Deep Learning Tutorial
+Overview
+This tutorial guides you through the implementation of an Encoder-Decoder Transformer model from scratch, suitable for tasks like machine translation.
+Key Concepts
+Encoder-Decoder Architecture
+
+The model consists of an encoder that processes the input sequence and a decoder that generates the output sequence.
+Self-Attention Mechanism
+
+Both the encoder and decoder use self-attention to weigh the importance of different tokens:
+
+scores = torch.matmul(Q, K.transpose(-2, -1)) / sqrt(d_k)
+Cross-Attention in Decoder
+
+The decoder employs cross-attention to attend to the encoder's output while generating the output sequence.
+Positional Encoding
+
+Adds positional information to the input embeddings to retain the order of tokens:
+
+pos_enc = torch.sin(position * (10000 ** (2 * (i // 2) / d_model)))
+Model Implementation Steps
+
+Define the Encoder and Decoder:
+
+class Encoder(nn.Module):
+    def __init__(self, vocab_size, d_model, n_heads):
+        super(Encoder, self).__init__()
+        self.embedding = nn.Embedding(vocab_size, d_model)
+        self.encoder_layer = nn.TransformerEncoderLayer(d_model, n_heads)
+
+    def forward(self, x):
+        x = self.embedding(x)
+        return self.encoder_layer(x)
+
+class Decoder(nn.Module):
+    def __init__(self, vocab_size, d_model, n_heads):
+        super(Decoder, self).__init__()
+        self.embedding = nn.Embedding(vocab_size, d_model)
+        self.decoder_layer = nn.TransformerDecoderLayer(d_model, n_heads)
+
+    def forward(self, x, memory):
+        x = self.embedding(x)
+        return self.decoder_layer(x, memory)
+Combine Encoder and Decoder:
+
+class EncoderDecoderTransformer(nn.Module):
+    def __init__(self, vocab_size, d_model, n_heads):
+        super(EncoderDecoderTransformer, self).__init__()
+        self.encoder = Encoder(vocab_size, d_model, n_heads)
+        self.decoder = Decoder(vocab_size, d_model, n_heads)
+        self.fc = nn.Linear(d_model, vocab_size)
+
+    def forward(self, src, tgt):
+        memory = self.encoder(src)
+        output = self.decoder(tgt, memory)
+        return self.fc(output)
+Training Process
+
+Use cross-entropy loss and an optimizer (e.g., Adam) to train the model for sequence-to-sequence tasks:
+
+criterion = nn.CrossEntropyLoss()
+optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+Conclusion
+The tutorial successfully demonstrates how to build an Encoder-Decoder Transformer model from scratch, highlighting the roles of self-attention, cross-attention, and positional encoding.

@@ -1,0 +1,41 @@
+Decoder-Only Transformer for Next Token Prediction: PyTorch Deep Learning Tutorial
+Overview
+This tutorial focuses on implementing a decoder-only Transformer model for next token prediction tasks, commonly used in language modeling.
+Key Concepts
+Decoder-Only Architecture
+
+Utilizes only the decoder part of the Transformer, making it suitable for autoregressive tasks where the model predicts the next token based on previous tokens.
+Masked Self-Attention
+
+Ensures that the model only attends to previous tokens, preventing information leakage from future tokens:
+
+scores = torch.matmul(Q, K.transpose(-2, -1)) / sqrt(d_k)
+scores.masked_fill_(mask == 0, float('-inf'))
+Positional Encoding
+
+Adds positional information to the input embeddings to maintain the order of tokens:
+
+pos_enc = torch.sin(position * (10000 ** (2 * (i // 2) / d_model)))
+Model Implementation Steps
+
+Define the Decoder-Only Transformer Model:
+
+class DecoderOnlyTransformer(nn.Module):
+    def __init__(self, vocab_size, d_model, n_heads):
+        super(DecoderOnlyTransformer, self).__init__()
+        self.embedding = nn.Embedding(vocab_size, d_model)
+        self.decoder = nn.TransformerDecoder(nn.TransformerDecoderLayer(d_model, n_heads), num_layers=6)
+        self.fc = nn.Linear(d_model, vocab_size)
+
+    def forward(self, x, mask):
+        x = self.embedding(x)
+        x = self.decoder(x, x, tgt_mask=mask)
+        return self.fc(x)
+Training Process
+
+Use cross-entropy loss and an optimizer (e.g., Adam) to train the model for next token prediction:
+
+criterion = nn.CrossEntropyLoss()
+optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+Conclusion
+The tutorial effectively demonstrates how to implement a decoder-only Transformer model for next token prediction, emphasizing the importance of masked self-attention and positional encoding.
