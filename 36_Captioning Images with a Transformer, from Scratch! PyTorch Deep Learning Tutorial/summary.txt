@@ -1,0 +1,32 @@
+Captioning Images with a Transformer, from Scratch!: PyTorch Deep Learning Tutorial
+Overview
+This tutorial guides you through the implementation of an image captioning model using a Transformer architecture, allowing for the generation of descriptive captions for images.
+Key Concepts
+Image Captioning Task
+
+The goal is to generate textual descriptions for images using neural networks, combining computer vision and natural language processing.
+Model Architecture
+
+The architecture typically consists of a Convolutional Neural Network (CNN) for feature extraction followed by a Transformer model for generating captions.
+Feature Extraction with CNN
+
+A pre-trained CNN (like ResNet) is used to extract features from images:
+
+features = cnn_model(image)
+Transformer for Caption Generation
+
+The Transformer model processes the extracted features and generates captions using self-attention and cross-attention mechanisms.
+Training Process
+
+The model is trained using pairs of images and their corresponding captions, employing a loss function such as cross-entropy:
+
+criterion = nn.CrossEntropyLoss()
+optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+Data Preparation
+
+The dataset must be preprocessed, including tokenizing captions and creating input-output pairs for training.
+Inference
+
+During inference, the model generates captions by predicting the next word based on previously generated words and the image features.
+Conclusion
+The tutorial effectively demonstrates how to build an image captioning system from scratch using a Transformer model, emphasizing the integration of CNNs for feature extraction and Transformers for sequence generation.

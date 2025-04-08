@@ -1,0 +1,35 @@
+Semantic Clustering of Text using Pre-trained Hugging Face Models
+Overview
+This tutorial demonstrates how to perform semantic clustering of textual data using pre-trained models from the Hugging Face library, enabling the grouping of similar texts based on their meanings.
+Key Concepts
+Semantic Clustering
+
+Semantic clustering involves grouping texts based on their semantic content rather than just syntactic similarity, allowing for more meaningful categorization.
+Using Hugging Face Models
+
+Pre-trained models from Hugging Face, such as BERT or DistilBERT, are utilized to convert text into dense vector representations (embeddings).
+Embedding Generation
+
+The tutorial shows how to generate embeddings for the text data using a Hugging Face model:
+
+from transformers import AutoTokenizer, AutoModel
+tokenizer = AutoTokenizer.from_pretrained("distilbert-base-uncased")
+model = AutoModel.from_pretrained("distilbert-base-uncased")
+
+inputs = tokenizer(texts, return_tensors="pt", padding=True, truncation=True)
+embeddings = model(**inputs).last_hidden_state.mean(dim=1)
+Clustering Algorithm
+
+After generating embeddings, a clustering algorithm (e.g., K-Means) is applied to group similar texts:
+
+from sklearn.cluster import KMeans
+kmeans = KMeans(n_clusters=5)
+kmeans.fit(embeddings.detach().numpy())
+Visualization
+
+Techniques for visualizing the clusters, such as t-SNE or PCA, are discussed to help understand the relationships between clusters.
+Performance Considerations
+
+Discusses the importance of selecting the right number of clusters and the impact of different pre-trained models on clustering results.
+Conclusion
+The tutorial effectively illustrates how to use pre-trained Hugging Face models for semantic clustering of text, providing insights into the process of embedding generation, clustering, and visualization.
